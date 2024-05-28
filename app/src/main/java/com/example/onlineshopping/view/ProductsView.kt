@@ -25,25 +25,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.onlineshopping.model.ProductItem
 import com.example.onlineshopping.viewModel.ProductViewModel
-import com.skydoves.landscapist.rememberDrawablePainter
 
-
+@OptIn(ExperimentalCoilApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
 private fun ProductListItem(productItem: ProductItem) {
     var image by remember {
-        mutableStateOf<Drawable?>(null)
+        mutableStateOf("")
     }
-    image = glideBuilder(LocalContext.current, productItem.image)
+    image=productItem.image
     Card {
         Column() {
             Image(
-                painter = rememberDrawablePainter(drawable = image),
+                painter = rememberImagePainter(data = image),
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -84,18 +85,5 @@ fun ProductsSection(productViewModel: ProductViewModel) {
 
 }
 
-private fun glideBuilder(context: Context, imageUrl: String): Drawable? {
-    var image: Drawable? = null
-    Glide.with(context).load(imageUrl).into(object : CustomTarget<Drawable>() {
-        override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-            image = resource
-        }
 
-        override fun onLoadCleared(placeholder: Drawable?) {
-            image = placeholder
-        }
-
-    })
-    return image
-}
 

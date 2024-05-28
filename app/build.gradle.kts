@@ -100,8 +100,8 @@ dependencies {
     val nav_version="2.7.6"
     implementation ("androidx.navigation:navigation-compose:$nav_version")
 
-    //Glide
-    implementation("com.github.skydoves:landscapist-glide:1.3.7")
+    //Coil
+    implementation("io.coil-kt:coil-compose:1.3.2")
 
     //Use LiveData As State
     implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
