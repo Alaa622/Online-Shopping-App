@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id ("kotlin-kapt")
+
 }
 
 android {
@@ -105,6 +106,8 @@ dependencies {
 
     //Use LiveData As State
     implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
+
+   
 
 
 }

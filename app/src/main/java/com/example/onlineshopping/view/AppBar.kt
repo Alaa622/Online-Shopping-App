@@ -1,6 +1,7 @@
 package com.example.onlineshopping.view
 
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -23,12 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.onlineshopping.R
 import com.example.onlineshopping.ui.theme.OnlineShoppingTheme
 
+@SuppressLint("RestrictedApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShoppingTopAppBar(@StringRes stringRes: Int) {
+fun ShoppingTopAppBar(@StringRes stringRes: Int, navController: NavController) {
     TopAppBar(
         title = {
             Text(
@@ -41,17 +44,25 @@ fun ShoppingTopAppBar(@StringRes stringRes: Int) {
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
             actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        navigationIcon = {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Back",
-                modifier = Modifier.padding(8.dp)
-            )
+        navigationIcon =
+        if (navController.currentDestination != navController.findDestination("categories")) {
+            {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+        } else {
+            {
+                //nothing
+            }
         },
-        actions = {
-            IconButton(onClick = {
 
-            }) {
+        actions = {
+            IconButton(onClick = {}) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
                     contentDescription = "Menu",
@@ -94,7 +105,6 @@ fun NavigationBottomBar() {
             }, label = { Text(text = stringResource(id = R.string.bottom_bar_settings)) })
     }
 }
-
 
 
 @Preview(showBackground = true)

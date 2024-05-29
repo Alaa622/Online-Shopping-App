@@ -17,12 +17,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.onlineshopping.R
+import com.example.onlineshopping.model.ProductItem
+import com.example.onlineshopping.model.base64Decode
 import com.example.onlineshopping.ui.theme.OnlineShoppingTheme
 import com.example.onlineshopping.viewModel.ProductViewModel
+import com.google.gson.Gson
+
 
 class MainActivity : ComponentActivity() {
     private val productViewModel: ProductViewModel by viewModels()
@@ -48,7 +53,8 @@ fun AppNavigation(modifier: Modifier = Modifier, productViewModel: ProductViewMo
             HomeScreen(
                 modifier = modifier,
                 title = R.string.categories_title,
-                topAppBarText = R.string.categories_bar
+                topAppBarText = R.string.categories_bar,
+                navController
             ) {
                 CategoriesSection(productViewModel = productViewModel) {
                     navController.navigate("products")
@@ -59,11 +65,25 @@ fun AppNavigation(modifier: Modifier = Modifier, productViewModel: ProductViewMo
             HomeScreen(
                 modifier = modifier,
                 title = R.string.products_title,
-                topAppBarText = R.string.products_bar
+                topAppBarText = R.string.products_bar,
+                navController
             ) {
-                ProductsSection(productViewModel = productViewModel)
+                ProductsSection(productViewModel = productViewModel, navController)
             }
         }
+        composable("productDetails/{gsonProductItem}") {
+            val gsonProductItem = it.arguments?.getString("gsonProductItem")?.base64Decode()
+            val productItem = Gson().fromJson(gsonProductItem, ProductItem::class.java)
+            HomeScreen(
+                modifier = modifier,
+                title = R.string.product_details,
+                topAppBarText = R.string.product_details,
+                navController
+            ) {
+                ShowProductDetails(productItem = productItem)
+            }
+        }
+
     }
 }
 
@@ -72,17 +92,21 @@ fun HomeScreen(
     modifier: Modifier,
     @StringRes title: Int,
     @StringRes topAppBarText: Int,
+    navController: NavController,
     content: @Composable () -> Unit
+
 ) {
     Scaffold(
-        topBar = { ShoppingTopAppBar(topAppBarText) },
+        topBar = { ShoppingTopAppBar(topAppBarText,navController) },
         bottomBar = { NavigationBottomBar() },
 
-    ) {
-        Column(modifier = modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(it)
-            .fillMaxSize()) {
+        ) {
+        Column(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(it)
+                .fillMaxSize()
+        ) {
             Spacer(modifier = modifier.padding(8.dp))
             SearchBar()
             Text(
