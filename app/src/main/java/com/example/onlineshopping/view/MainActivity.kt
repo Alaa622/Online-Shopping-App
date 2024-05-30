@@ -17,20 +17,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.onlineshopping.R
+import com.example.onlineshopping.data.local.ProductDatabase
 import com.example.onlineshopping.model.ProductItem
 import com.example.onlineshopping.model.base64Decode
+import com.example.onlineshopping.repo.Repository
 import com.example.onlineshopping.ui.theme.OnlineShoppingTheme
 import com.example.onlineshopping.viewModel.ProductViewModel
+import com.example.onlineshopping.viewModel.ProductViewModelFactory
 import com.google.gson.Gson
 
 
 class MainActivity : ComponentActivity() {
-    private val productViewModel: ProductViewModel by viewModels()
+    private  val productViewModel by lazy {
+         ViewModelProvider(
+            this,
+            ProductViewModelFactory(application)
+        )[ProductViewModel::class.java]
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -40,8 +49,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier, productViewModel: ProductViewModel) {
     val navController = rememberNavController()
@@ -97,7 +104,7 @@ fun HomeScreen(
 
 ) {
     Scaffold(
-        topBar = { ShoppingTopAppBar(topAppBarText,navController) },
+        topBar = { ShoppingTopAppBar(topAppBarText, navController) },
         bottomBar = { NavigationBottomBar() },
 
         ) {

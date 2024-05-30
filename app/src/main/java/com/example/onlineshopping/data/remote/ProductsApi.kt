@@ -6,10 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ProductsApi {
-
-    @GET("products/categories")
-    suspend fun getAllCategories(): Response<List<String>>
-
-    @GET("products/category/{category}")
-    suspend fun getProductsByCategory(@Path("category") category:String):Response<List<ProductItem>>
+    @GET("products")
+    suspend fun getAllProducts(): Response<List<ProductItem>>
 }

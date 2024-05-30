@@ -1,48 +1,81 @@
 package com.example.onlineshopping.viewModel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.onlineshopping.data.local.ProductDatabase
 import com.example.onlineshopping.model.ProductItem
 import com.example.onlineshopping.repo.Repository
 import kotlinx.coroutines.launch
+import java.io.IOException
 
-class ProductViewModel : ViewModel() {
+class ProductViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository: Repository =
+        Repository(ProductDatabase.getDatabase(application.applicationContext))
 
     private val _categories = MutableLiveData<List<String>>()
     val liveDataCategories: LiveData<List<String>> get() = _categories
 
-    private val _products = MutableLiveData<List<ProductItem>>(emptyList())
-    val liveDataProducts: LiveData<List<ProductItem>> get() = _products
-
-    private val repository = Repository()
-
+    private val _productsOfCategory = MutableLiveData<List<ProductItem>>()
+    val liveDataProductsOfCategory: LiveData<List<ProductItem>> get() = _productsOfCategory
 
     init {
+        getAllProducts()
         getAllCategories()
     }
 
-
-    private fun getAllCategories() {
+    private fun getAllProducts() {
         viewModelScope.launch {
-            val response = repository.getAllCategories()
-            if (response.isSuccessful) {
-                _categories.postValue(response.body())
-            }
-
+            safeFetchProductsFromRemote()
         }
-
     }
 
     fun getProductsByCategory(category: String) {
         viewModelScope.launch {
-            val response = repository.getProductsByCategory(category)
-            if (response.isSuccessful) {
-                _products.postValue(response.body())
+            _productsOfCategory.value = repository.getProductsByCategory(category)
+        }
+
+    }
+
+    private fun getAllCategories() {
+        viewModelScope.launch {
+            _categories.value = repository.getAllCategories()
+        }
+
+    }
+
+    private suspend fun safeFetchProductsFromRemote() {
+        try {
+            if (internetConnection(this.getApplication())) {
+                val productResponse = repository.getAllProducts()
+                if (productResponse.isSuccessful) {
+                    productResponse.body()?.let { repository.insertAllProducts(it) }
+                }
             }
+
+        } catch (e: IOException) {
+            throw IOException("No Internet Connection")
         }
     }
+
+    private fun internetConnection(context: Context): Boolean {
+        (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).apply {
+            return getNetworkCapabilities(activeNetwork)?.run {
+                when {
+                    hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                    hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                    hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                    else -> false
+                }
+            } ?: false
+        }
+    }
+
+
 }
