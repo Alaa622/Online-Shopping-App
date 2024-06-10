@@ -25,14 +25,24 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
     private val _productsOfCategory = MutableLiveData<List<ProductItem>>()
     val liveDataProductsOfCategory: LiveData<List<ProductItem>> get() = _productsOfCategory
 
+    private val _allProducts = MutableLiveData<List<ProductItem>>()
+    val liveDataAllProducts : LiveData<List<ProductItem>> get() = _allProducts
+
     init {
-        getAllProducts()
+        getAllProductsFromRemote()
         getAllCategories()
+        getAllProductsFromLocal()
     }
 
-    private fun getAllProducts() {
+    private fun getAllProductsFromRemote() {
         viewModelScope.launch {
             safeFetchProductsFromRemote()
+        }
+    }
+
+    private fun getAllProductsFromLocal(){
+        viewModelScope.launch {
+            _allProducts.value=repository.getAllLocalProducts()
         }
     }
 
@@ -53,7 +63,7 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
     private suspend fun safeFetchProductsFromRemote() {
         try {
             if (internetConnection(this.getApplication())) {
-                val productResponse = repository.getAllProducts()
+                val productResponse = repository.getAllRemoteProducts()
                 if (productResponse.isSuccessful) {
                     productResponse.body()?.let { repository.insertAllProducts(it) }
                 }

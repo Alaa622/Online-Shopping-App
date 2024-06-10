@@ -31,11 +31,11 @@ import com.example.onlineshopping.ui.theme.OnlineShoppingTheme
 @SuppressLint("RestrictedApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShoppingTopAppBar(@StringRes stringRes: Int, navController: NavController) {
+fun ShoppingTopAppBar(navController: NavController) {
     TopAppBar(
         title = {
             Text(
-                text = stringResource(id = stringRes),
+                text = stringResource(id = R.string.home_bar),
                 color = MaterialTheme.colorScheme.onPrimary
             )
         },
@@ -45,7 +45,8 @@ fun ShoppingTopAppBar(@StringRes stringRes: Int, navController: NavController) {
             actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         ),
         navigationIcon =
-        if (navController.currentDestination != navController.findDestination("categories")) {
+        if (navController.currentDestination == navController.findDestination("productDetails/{gsonProductItem}"))
+        {
             {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
@@ -76,43 +77,34 @@ fun ShoppingTopAppBar(@StringRes stringRes: Int, navController: NavController) {
 
 }
 
-@Composable
-fun NavigationBottomBar() {
-    NavigationBar {
-        NavigationBarItem(selected = true,
-            onClick = {},
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.Home,
-                    contentDescription = ""
-                )
-            }, label = { Text(text = stringResource(id = R.string.bottom_bar_home)) })
-        NavigationBarItem(selected = false,
-            onClick = {},
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = ""
-                )
-            }, label = { Text(text = stringResource(R.string.bottom_bar_profile)) })
-        NavigationBarItem(selected = false,
-            onClick = {},
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = ""
-                )
-            }, label = { Text(text = stringResource(id = R.string.bottom_bar_settings)) })
-    }
-}
+//@Composable
+//fun NavigationBottomBar() {
+//    NavigationBar {
+//        NavigationBarItem(selected = true,
+//            onClick = {},
+//            icon = {
+//                Icon(
+//                    imageVector = Icons.Filled.Home,
+//                    contentDescription = ""
+//                )
+//            }, label = { Text(text = stringResource(id = R.string.bottom_bar_home)) })
+//        NavigationBarItem(selected = false,
+//            onClick = {},
+//            icon = {
+//                Icon(
+//                    imageVector = Icons.Filled.AccountCircle,
+//                    contentDescription = ""
+//                )
+//            }, label = { Text(text = stringResource(R.string.bottom_bar_profile)) })
+//        NavigationBarItem(selected = false,
+//            onClick = {},
+//            icon = {
+//                Icon(
+//                    imageVector = Icons.Filled.Settings,
+//                    contentDescription = ""
+//                )
+//            }, label = { Text(text = stringResource(id = R.string.bottom_bar_settings)) })
+//    }
+//}
 
 
-@Preview(showBackground = true)
-@Composable
-private fun AppBarPreview() {
-    OnlineShoppingTheme {
-        //ShoppingTopAppBar(R.string.categories_bar)
-        //ShoppingTopAppBar(stringRes = R.string.products_bar)
-        //NavigationBottomBar()
-    }
-}

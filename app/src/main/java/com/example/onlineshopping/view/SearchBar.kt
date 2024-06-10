@@ -3,6 +3,7 @@ package com.example.onlineshopping.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -41,7 +42,7 @@ fun SearchBar() {
             )
         },
         shape = RoundedCornerShape(36.dp),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(4.dp),
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = MaterialTheme.colorScheme.surface,
             focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -55,7 +56,7 @@ fun SearchBar() {
 
 @Preview(showBackground = true)
 @Composable
-private fun SearchBarPreview(modifier: Modifier = Modifier) {
+private fun SearchBarPreview() {
     OnlineShoppingTheme {
         SearchBar()
     }
